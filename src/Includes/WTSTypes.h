@@ -393,7 +393,8 @@ typedef enum tagWTSOrdDetailType : uint32_t
 	ODT_Unknown		= 0,	//未知类型
 	ODT_BestPrice	= 'U',	//本方最优
 	ODT_AnyPrice	= '1',	//市价
-	ODT_LimitPrice	= '2'	//限价
+	ODT_LimitPrice	= '2',	//限价
+	ODT_Cancel		= '3'	//撤单
 } WTSOrdDetailType;
 
 NS_WTP_END
