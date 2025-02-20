@@ -421,7 +421,7 @@ public:
 	constexpr inline const char*	getOrderID() const  noexcept { return m_strOrderID; }
 	constexpr inline char*			getOrderID()  noexcept { return m_strOrderID; }
 
-	inline void	setStateMsg(const char* msg) noexcept {wt_strcpy(m_strStateMsg, msg);}
+	inline void	setStateMsg(const char* msg) noexcept {strncpy(m_strStateMsg, msg, 63);}
 	constexpr inline const char*	getStateMsg() const noexcept {return m_strStateMsg;}
 	constexpr inline char*			getStateMsg() noexcept { return m_strStateMsg; }
 
