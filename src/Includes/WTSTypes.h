@@ -222,11 +222,10 @@ typedef enum tagBusinessType : uint32_t
 	BT_QUOTE	= '3',	//期权报价
 	BT_FORQUOTE = '4',	//期权询价
 	BT_FREEZE	= '5',	//期权对锁
-	BT_CREDIT	= '6',	//融资融券
 
-	BT_CREDIT_SLO = '7', //信用融券 |买券还券委托   | 7 ：信用融券 | 1 ：买入 |融券卖出   2： 卖出
-	BT_CREDIT_FIN = '8', //信用融资 |融资买入委托   | 8 ：信用融资 | 1： 买入 |卖券还款   2： 卖出
-	BT_CREDIT_ORD = '9', //信用交易 |担保品买入委托 | 9 : 信用交易 | 1 : 买入 | 2：卖出
+	BT_CREDIT	= '6',	//融资融券：融资还款/融券还券
+	BT_CREDIT_SLO = '7', //融券业务：融资买券/卖券还款
+	BT_CREDIT_FIN = '8', //融资业务：买券还券/融券卖出
 
 	BT_UNKNOWN			//未知业务类型
 

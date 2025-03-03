@@ -44,14 +44,30 @@ protected:
 	char			m_strMsg[256] = { 0 };
 };
 
+/*
+ *	By Wesley @ 2025.03.03
+ *	WTSBusinessType里包含了信用交易的支持
+ *	要对委托方式做一个场景预演
+ *	1、融资买券/卖券还款，m_businessType需要设置成BT_CREDIT_FIN，其他开平和普通委托一致
+ *	2、买券还券/融券卖出，m_businessType需要设置成BT_CREDIT_SLO，其他开平和普通委托一致
+ *	3、直接还款/直接还券，m_businessType需要设置成BT_CREDIT
+ *			直接还款将m_dCredBal设置为将要还款的金额，买入的方式下单即可
+ *			直接还券，则以卖出（平多）的方式下委托单即可
+ */
 typedef struct _WTSEntrustStruct
 {
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
 	double			m_dVolume;
-	double			m_iPrice;
 
-	bool			m_bIsNet;
+	union 
+	{
+		double			m_iPrice;		//	委托价格
+		double			m_dCredBal;		//	直接还款的金额, 仅直接还款用
+	};
+	
+
+	bool			m_bIsNet;			// 是否净头寸交易
 	bool			m_bIsBuy;
 
 	WTSDirectionType	m_direction;
@@ -118,6 +134,12 @@ public:
 		wt_strcpy(m_strCode, code, len);
     }
 
+
+	
+	constexpr inline bool isCreditBusiness() const { return (m_businessType == BT_CREDIT || m_businessType == BT_CREDIT_FIN || m_businessType == BT_CREDIT_SLO); }
+	constexpr inline void setCreditBalance(double credBal) noexcept { m_dCredBal = credBal; }
+	constexpr inline double getCreditBalance() const noexcept { return m_dCredBal; }
+	
 	constexpr inline void setDirection(WTSDirectionType dType)noexcept {m_direction = dType;}
 	constexpr inline void setPriceType(WTSPriceType pType)noexcept {m_priceType = pType;}
 	constexpr inline void setOrderFlag(WTSOrderFlag oFlag)noexcept {m_orderFlag = oFlag;}
