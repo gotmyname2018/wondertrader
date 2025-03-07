@@ -97,16 +97,16 @@ void handle_signal(int signum)
 		else
 			exit(signum);
 		break;
-	case SIGUSR1:      // terminate process    User defined signal 1
-	case SIGUSR2:      // terminate process    User defined signal 2
-		sprintf(buf, "app caught user defined signal %d", signum);
-		g_cbSignalLog(buf);
-		print_stack_trace(g_cbSignalLog);
-		if (g_exitHandler)
-			g_exitHandler(signum);
-		else
-			exit(signum);
-		break;
+	//case SIGUSR1:      // terminate process    User defined signal 1
+	//case SIGUSR2:      // terminate process    User defined signal 2
+	//	sprintf(buf, "app caught user defined signal %d", signum);
+	//	g_cbSignalLog(buf);
+	//	print_stack_trace(g_cbSignalLog);
+	//	if (g_exitHandler)
+	//		g_exitHandler(signum);
+	//	else
+	//		exit(signum);
+	//	break;
 	case SIGQUIT:      // create core image    quit program
 	case SIGILL:       // create core image    illegal instruction
 	case SIGTRAP:      // create core image    trace trap
