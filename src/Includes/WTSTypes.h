@@ -358,7 +358,15 @@ typedef enum tagTradeStatus : uint32_t
 	TS_AuctionOrdering	= '3',	//集合竞价下单
 	TS_AuctionBalance	= '4',	//集合竞价平衡
 	TS_AuctionMatch		= '5',	//集合竞价撮合
-	TS_Closed			= '6'	//收盘
+	TS_Closed			= '6',	//收盘
+	TS_Auction			= '7',	//集合竞价	
+	TS_BusinessSuspension	= '8',	//休市	
+	TS_VolatilityInterrupt	= '9',	//波动性中断
+	TS_TemporarySuspension	= 'a',	//临时停牌
+	TS_AuctionAfterClosed	= 'b',	//收盘集合竞价
+	TS_ResumableFusing		= 'c',	//可恢复交易的熔断
+	TS_UnResumableFusing	= 'd',	//不可恢复交易的熔断
+	TS_TradingAfterClosed	= 'e'	//盘后交易
 }WTSTradeStatus;
 
 /*
