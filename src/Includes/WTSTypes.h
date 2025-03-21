@@ -352,6 +352,7 @@ typedef enum tagTraderEvent : uint32_t
  */
 typedef enum tagTradeStatus : uint32_t
 {
+	TS_None				= 0,
 	TS_BeforeTrading	= '0',	//开盘前
 	TS_NotTrading		= '1',	//非交易
 	TS_Continous		= '2',	//连续竞价
