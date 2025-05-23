@@ -615,6 +615,7 @@ typedef struct _WTSPositionStruct
 	double		m_dInitPosition;	//期初持仓
 	double		m_dPrePosition;		//昨仓
 	double		m_dNewPosition;		//今仓
+	double		m_dApplyPosition;	//申赎持仓
 	double		m_dAvailPrePos;		//可平昨仓
 	double		m_dAvailNewPos;		//可平今仓
 	double		m_dTotalPosCost;	//持仓总成本
@@ -629,6 +630,7 @@ typedef struct _WTSPositionStruct
 		, m_dInitPosition(0)
 		, m_dPrePosition(0)
 		, m_dNewPosition(0)
+		, m_dApplyPosition(0)
 		, m_dAvailPrePos(0)
 		, m_dAvailNewPos(0)
 		, m_dMargin(0)
@@ -661,6 +663,7 @@ public:
 	constexpr inline void setDirection(WTSDirectionType dType) noexcept{m_direction = dType;}
 	constexpr inline void setPrePosition(double prePos) noexcept { m_dPrePosition = prePos; }
 	constexpr inline void setNewPosition(double newPos) noexcept { m_dNewPosition = newPos; }
+	constexpr inline void setApplyPosition(double appPos) noexcept { m_dApplyPosition = appPos; }
 	constexpr inline void setAvailPrePos(double availPos) noexcept { m_dAvailPrePos = availPos; }
 	constexpr inline void setAvailNewPos(double availPos) noexcept { m_dAvailNewPos = availPos; }
 	constexpr inline void setPositionCost(double cost) noexcept {m_dTotalPosCost = cost;}
@@ -671,6 +674,7 @@ public:
 	constexpr inline WTSDirectionType getDirection() const noexcept {return m_direction;}
 	constexpr inline double	getPrePosition() const noexcept { return m_dPrePosition; }
 	constexpr inline double	getNewPosition() const noexcept { return m_dNewPosition; }
+	constexpr inline double	getApplyPosition() const noexcept { return m_dApplyPosition; }
 	constexpr inline double	getAvailPrePos() const noexcept { return m_dAvailPrePos; }
 	constexpr inline double	getAvailNewPos() const noexcept { return m_dAvailNewPos; }
 
