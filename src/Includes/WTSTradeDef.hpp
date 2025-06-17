@@ -44,14 +44,30 @@ protected:
 	char			m_strMsg[256] = { 0 };
 };
 
+/*
+ *	By Wesley @ 2025.03.03
+ *	WTSBusinessType里包含了信用交易的支持
+ *	要对委托方式做一个场景预演
+ *	1、融资买券/卖券还款，m_businessType需要设置成BT_CREDIT_FIN，其他开平和普通委托一致
+ *	2、买券还券/融券卖出，m_businessType需要设置成BT_CREDIT_SLO，其他开平和普通委托一致
+ *	3、直接还款/直接还券，m_businessType需要设置成BT_CREDIT
+ *			直接还款将m_dCredBal设置为将要还款的金额，买入的方式下单即可
+ *			直接还券，则以卖出（平多）的方式下委托单即可
+ */
 typedef struct _WTSEntrustStruct
 {
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
 	double			m_dVolume;
-	double			m_iPrice;
 
-	bool			m_bIsNet;
+	union 
+	{
+		double			m_iPrice;		//	委托价格
+		double			m_dCredBal;		//	直接还款的金额, 仅直接还款用
+	};
+	
+
+	bool			m_bIsNet;			// 是否净头寸交易
 	bool			m_bIsBuy;
 
 	WTSDirectionType	m_direction;
@@ -118,6 +134,12 @@ public:
 		wt_strcpy(m_strCode, code, len);
     }
 
+
+	
+	constexpr inline bool isCreditBusiness() const { return (m_businessType == BT_CREDIT || m_businessType == BT_CREDIT_FIN || m_businessType == BT_CREDIT_SLO); }
+	constexpr inline void setCreditBalance(double credBal) noexcept { m_dCredBal = credBal; }
+	constexpr inline double getCreditBalance() const noexcept { return m_dCredBal; }
+	
 	constexpr inline void setDirection(WTSDirectionType dType)noexcept {m_direction = dType;}
 	constexpr inline void setPriceType(WTSPriceType pType)noexcept {m_priceType = pType;}
 	constexpr inline void setOrderFlag(WTSOrderFlag oFlag)noexcept {m_orderFlag = oFlag;}
@@ -421,7 +443,7 @@ public:
 	constexpr inline const char*	getOrderID() const  noexcept { return m_strOrderID; }
 	constexpr inline char*			getOrderID()  noexcept { return m_strOrderID; }
 
-	inline void	setStateMsg(const char* msg) noexcept {wt_strcpy(m_strStateMsg, msg);}
+	inline void	setStateMsg(const char* msg) noexcept {strncpy(m_strStateMsg, msg, 63);}
 	constexpr inline const char*	getStateMsg() const noexcept {return m_strStateMsg;}
 	constexpr inline char*			getStateMsg() noexcept { return m_strStateMsg; }
 
@@ -593,6 +615,7 @@ typedef struct _WTSPositionStruct
 	double		m_dInitPosition;	//期初持仓
 	double		m_dPrePosition;		//昨仓
 	double		m_dNewPosition;		//今仓
+	double		m_dApplyPosition;	//申赎持仓
 	double		m_dAvailPrePos;		//可平昨仓
 	double		m_dAvailNewPos;		//可平今仓
 	double		m_dTotalPosCost;	//持仓总成本
@@ -607,6 +630,7 @@ typedef struct _WTSPositionStruct
 		, m_dInitPosition(0)
 		, m_dPrePosition(0)
 		, m_dNewPosition(0)
+		, m_dApplyPosition(0)
 		, m_dAvailPrePos(0)
 		, m_dAvailNewPos(0)
 		, m_dMargin(0)
@@ -639,6 +663,7 @@ public:
 	constexpr inline void setDirection(WTSDirectionType dType) noexcept{m_direction = dType;}
 	constexpr inline void setPrePosition(double prePos) noexcept { m_dPrePosition = prePos; }
 	constexpr inline void setNewPosition(double newPos) noexcept { m_dNewPosition = newPos; }
+	constexpr inline void setApplyPosition(double appPos) noexcept { m_dApplyPosition = appPos; }
 	constexpr inline void setAvailPrePos(double availPos) noexcept { m_dAvailPrePos = availPos; }
 	constexpr inline void setAvailNewPos(double availPos) noexcept { m_dAvailNewPos = availPos; }
 	constexpr inline void setPositionCost(double cost) noexcept {m_dTotalPosCost = cost;}
@@ -649,6 +674,7 @@ public:
 	constexpr inline WTSDirectionType getDirection() const noexcept {return m_direction;}
 	constexpr inline double	getPrePosition() const noexcept { return m_dPrePosition; }
 	constexpr inline double	getNewPosition() const noexcept { return m_dNewPosition; }
+	constexpr inline double	getApplyPosition() const noexcept { return m_dApplyPosition; }
 	constexpr inline double	getAvailPrePos() const noexcept { return m_dAvailPrePos; }
 	constexpr inline double	getAvailNewPos() const noexcept { return m_dAvailNewPos; }
 

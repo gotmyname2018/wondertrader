@@ -273,6 +273,7 @@ struct WTSOrdDtlStruct
 	uint32_t			volume;			//委托数量
 	WTSBSDirectType		side;		//委托方向
 	WTSOrdDetailType	otype;		//委托类型
+    int64_t             orderid;    //委托单号
 
 	WTSOrdDtlStruct()
 	{

@@ -20,8 +20,8 @@
 #include "../Share/decimal.h"
 #include "../Share/Converter.hpp"
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
@@ -241,10 +241,10 @@ TraderCTPOpt::~TraderCTPOpt()
 
 bool TraderCTPOpt::init(WTSVariant* params)
 {
-	m_strFront = params->get("front")->asCString();
-	m_strBroker = params->get("broker")->asCString();
-	m_strUser = params->get("user")->asCString();
-	m_strPass = params->get("pass")->asCString();
+	m_strFront = params->getCString("front");
+	m_strBroker = params->getCString("broker");
+	m_strUser = params->getCString("user");
+	m_strPass = params->getCString("pass");
 
 	m_strAppID = params->getCString("appid");
 	m_strAuthCode = params->getCString("authcode");
@@ -305,7 +305,8 @@ void TraderCTPOpt::connect()
 {
 	std::stringstream ss;
 	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
-	fs::create_directories(ss.str().c_str());
+	if(!StdFile::exists(ss.str().c_str()))
+		fs::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
@@ -1714,7 +1715,11 @@ void TraderCTPOpt::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, C
 void TraderCTPOpt::OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus)
 {
 	if (m_bscSink)
-		m_bscSink->onPushInstrumentStatus(pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (WTSTradeStatus)pInstrumentStatus->InstrumentStatus);
+	{
+		write_log(m_bscSink, LL_INFO, "NewStatus, exchg: {}, code: {}, status: {}, reason: {}, entertime: {}",
+			pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (int)pInstrumentStatus->InstrumentStatus, (int)pInstrumentStatus->EnterReason, pInstrumentStatus->EnterTime);
+		m_bscSink->onPushInstrumentStatus(pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (WTSTradeStatus)pInstrumentStatus->InstrumentStatus);			
+	}
 }
 
 bool TraderCTPOpt::isConnected()

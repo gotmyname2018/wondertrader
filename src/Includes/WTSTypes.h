@@ -227,7 +227,10 @@ typedef enum tagBusinessType : uint32_t
 	BT_CREDIT_SLO = '7', //信用融券 |买券还券委托   | 7 ：信用融券 | 1 ：买入 |融券卖出   2： 卖出
 	BT_CREDIT_FIN = '8', //信用融资 |融资买入委托   | 8 ：信用融资 | 1： 买入 |卖券还款   2： 卖出
 	BT_CREDIT_ORD = '9', //信用交易 |担保品买入委托 | 9 : 信用交易 | 1 : 买入 | 2：卖出
-
+	/*融资买入 = 买入开仓
+	卖券还款 = 卖出平仓
+	融券卖出 = 卖出开仓
+	买券还券 = 买入平仓*/
 	BT_UNKNOWN			//未知业务类型
 
 } WTSBusinessType;
@@ -285,7 +288,10 @@ typedef enum tagTradeType : uint32_t
 	WTT_OptionExecution		= '1',	//期权执行
 	WTT_OTC					= '2',	//OTC成交
 	WTT_EFPDerived			= '3',	//期转现衍生成交
-	WTT_CombinationDerived	= '4'	//组合衍生成交
+	WTT_CombinationDerived	= '4',	//组合衍生成交
+	WTT_EntrustFin			= '5',	//融资委托
+	WTT_EntrustSlo			= '6'	//融券委托
+
 } WTSTradeType;
 
 
@@ -353,13 +359,22 @@ typedef enum tagTraderEvent : uint32_t
  */
 typedef enum tagTradeStatus : uint32_t
 {
+	TS_None				= 0,
 	TS_BeforeTrading	= '0',	//开盘前
 	TS_NotTrading		= '1',	//非交易
 	TS_Continous		= '2',	//连续竞价
 	TS_AuctionOrdering	= '3',	//集合竞价下单
 	TS_AuctionBalance	= '4',	//集合竞价平衡
 	TS_AuctionMatch		= '5',	//集合竞价撮合
-	TS_Closed			= '6'	//收盘
+	TS_Closed			= '6',	//收盘
+	TS_Auction			= '7',	//集合竞价	
+	TS_BusinessSuspension	= '8',	//休市	
+	TS_VolatilityInterrupt	= '9',	//波动性中断
+	TS_TemporarySuspension	= 'a',	//临时停牌
+	TS_AuctionAfterClosed	= 'b',	//收盘集合竞价
+	TS_ResumableFusing		= 'c',	//可恢复交易的熔断
+	TS_UnResumableFusing	= 'd',	//不可恢复交易的熔断
+	TS_TradingAfterClosed	= 'e'	//盘后交易
 }WTSTradeStatus;
 
 /*
@@ -393,7 +408,8 @@ typedef enum tagWTSOrdDetailType : uint32_t
 	ODT_Unknown		= 0,	//未知类型
 	ODT_BestPrice	= 'U',	//本方最优
 	ODT_AnyPrice	= '1',	//市价
-	ODT_LimitPrice	= '2'	//限价
+	ODT_LimitPrice	= '2',	//限价
+	ODT_Cancel		= '3'	//撤单
 } WTSOrdDetailType;
 
 NS_WTP_END
