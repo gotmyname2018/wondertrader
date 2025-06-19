@@ -19,7 +19,7 @@
 
 NS_WTP_BEGIN
 class WTSContractInfo;
-
+class WTSVariant;
 class WTSError : public WTSPoolObject<WTSError>
 {
 public:
@@ -702,6 +702,7 @@ public:
 
 public:
 	virtual ~WTSPositionItem(){}
+
 
 protected:
 	WTSContractInfo*	m_pContract = NULL;

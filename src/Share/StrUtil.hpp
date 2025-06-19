@@ -49,6 +49,18 @@ namespace StrUtil
 		return std::move(ret);
 	}
 
+	/*用法：支持链式调用和任意字符组合过滤，StrUtil::trimAll("A [1, 2:x3]", " :,[]x3");   结果："A12"*/
+	static std::string& trimAll(std::string &s, const char* chars = " \t\n\r")
+	{
+		std::string pattern(chars);
+		s.erase(std::remove_if(s.begin(), s.end(),
+			[&pattern](char c)
+		{
+			return pattern.find(c) != std::string::npos;
+		}), s.end());
+		return s;
+	}
+
 	constexpr static inline std::size_t findFirst(const char* str, char ch) noexcept
 	{
 		std::size_t i = 0;
