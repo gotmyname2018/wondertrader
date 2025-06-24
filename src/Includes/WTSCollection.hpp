@@ -873,4 +873,68 @@ protected:
 	std::deque<WTSObject*>	_queue;
 };
 
+class WTSStack : public WTSObject
+{
+public:
+	static WTSStack* create() noexcept
+	{
+		WTSStack* pRet = new WTSStack();
+		return pRet;
+	}
+
+	inline uint32_t size() const noexcept { return (uint32_t)_vec.size(); }
+	inline bool empty() const noexcept { return _vec.empty(); }
+
+	inline void push(WTSObject* obj, bool bAutoRetain = true) noexcept
+	{
+		if (bAutoRetain && obj)
+			obj->retain();
+		_vec.emplace_back(obj);
+	}
+
+	inline WTSObject* pop() noexcept
+	{
+		if (_vec.empty())
+			return nullptr;
+
+		WTSObject* obj = _vec.back();
+		_vec.pop_back();
+		if (obj)
+			obj->release();
+		return obj; 
+	}
+
+	inline WTSObject* top() noexcept
+	{
+		if (_vec.empty())
+			return nullptr;
+		return _vec.back();
+	}
+
+	void clear() noexcept
+	{
+		for (auto& obj : _vec)
+		{
+			if (obj)
+				obj->release();
+		}
+		_vec.clear();
+	}
+
+	virtual void release() noexcept override
+	{
+		WTSObject::release();
+	}
+
+protected:
+	WTSStack() = default;
+	virtual ~WTSStack()
+	{
+		clear();
+	}
+
+private:
+	std::vector<WTSObject*> _vec;
+};
+
 NS_WTP_END
