@@ -60,12 +60,12 @@ typedef struct _WTSEntrustStruct
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
 	double			m_dVolume;
 
-	union 
+	union
 	{
 		double			m_iPrice;		//	委托价格
 		double			m_dCredBal;		//	直接还款的金额, 仅直接还款用
 	};
-	
+
 
 	bool			m_bIsNet;			// 是否净头寸交易
 	bool			m_bIsBuy;
@@ -79,6 +79,7 @@ typedef struct _WTSEntrustStruct
 	char				m_strUserTag[64] = { 0 };
 
 	WTSBusinessType		m_businessType;
+	char				m_extras[64] = {0};
 
 	_WTSEntrustStruct()
 		: m_iPrice(0)
@@ -183,6 +184,8 @@ public:
 	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 	constexpr inline void setExtras(WTSVariant* pExtras) noexcept { m_pExtras = pExtras; }
+	inline void setextras(const char*  pExtras) noexcept { wt_strcpy (m_extras, pExtras); }
+
 	constexpr inline WTSVariant* getExtras() const  noexcept { return m_pExtras; }
 
 protected:
