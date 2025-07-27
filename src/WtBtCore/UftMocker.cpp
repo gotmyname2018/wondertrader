@@ -1227,7 +1227,7 @@ void UftMocker::update_position(const char* stdCode, bool isLong, uint32_t offse
 				eit = it;
 
 			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
-			if (isLong)
+			if (!isLong)
 				profit *= -1;
 			pItem._closeprofit += profit;
 
