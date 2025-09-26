@@ -15,13 +15,8 @@
 #include <condition_variable>
 #include <stdint.h>
 #include <string>
-
-#if _MSC_VER
-#include <io.h>
-#pragma warning(disable:4996)
-#else
-#include <unistd.h>
-#endif
+#include <filesystem>
+#include <fstream>
 
 //////////////////////////////////////////////////////////////////////////
 //std线程类
@@ -59,49 +54,94 @@ private:
 class StdFile
 {
 public:
-	static inline uint64_t read_file_content(const char* filename, std::string& content)
-	{
-		FILE* f = fopen(filename, "rb");
-		fseek(f, 0, SEEK_END);
-		uint32_t length = ftell(f);
-		content.resize(length);   // allocate memory for a buffer of appropriate dimension
-		fseek(f, 0, 0);
-		fread((void*)content.data(), sizeof(char), length, f);
-		fclose(f);
-		return length;
-	}
+    static inline uint64_t read_file_content(const char* filename, std::string& content, std::size_t offset = 0, std::size_t length = 0)
+    {
+        // 检查文件是否存在
+        if (!std::filesystem::exists(filename)) 
+		{
+            throw std::runtime_error("File does not exist");
+        }
+        
+        // 获取文件大小
+        auto file_size = std::filesystem::file_size(filename);
+        
+        // 检查偏移量是否有效
+        if (offset > file_size) 
+		{
+            throw std::runtime_error("Offset exceeds file size");
+        }
+        
+        // 如果未指定长度，则读取从offset到文件末尾的所有内容
+        if (length == 0) 
+		{
+            length = static_cast<std::size_t>(file_size - offset);
+        }
+        
+        // 确保读取长度不超过文件边界
+        if (offset + length > file_size) 
+		{
+            length = static_cast<std::size_t>(file_size - offset);
+        }
+        
+        // 使用文件流读取
+        std::ifstream file(filename, std::ios::binary);
+        if (!file.is_open()) 
+		{
+            throw std::runtime_error("Failed to open file");
+        }
+        
+        // 定位到指定偏移位置
+        file.seekg(static_cast<std::streamoff>(offset));
+        
+        // 调整缓冲区大小
+        content.resize(length);
+        
+        // 读取数据
+        if (length > 0) 
+		{
+            file.read(&content[0], static_cast<std::streamsize>(length));
+            
+            // 检查是否读取成功
+            if (file.gcount() != static_cast<std::streamsize>(length)) 
+			{
+                throw std::runtime_error("Failed to read expected number of bytes");
+            }
+        }
+        
+        file.close();
+        return static_cast<uint64_t>(length);
+    }
 
-	static inline void write_file_content(const char* filename, const std::string& content)
-	{
-		FILE* f = fopen(filename, "wb");
-		fwrite((void*)content.data(), sizeof(char), content.size(), f);
-		fclose(f);
-	}
+    static inline void write_file_content(const char* filename, const std::string& content)
+    {
+        std::ofstream file(filename, std::ios::binary);
+        if (!file.is_open()) 
+		{
+            throw std::runtime_error("Failed to open file for writing");
+        }
+        file.write(content.data(), static_cast<std::streamsize>(content.size()));
+        file.close();
+    }
 
-	static inline void write_file_content(const char* filename, const void* data, std::size_t length)
-	{
-		FILE* f = fopen(filename, "wb");
-		fwrite(data, sizeof(char), length, f);
-		fclose(f);
-	}
+    static inline void write_file_content(const char* filename, const void* data, std::size_t length)
+    {
+        std::ofstream file(filename, std::ios::binary);
+        if (!file.is_open()) 
+		{
+            throw std::runtime_error("Failed to open file for writing");
+        }
+        file.write(static_cast<const char*>(data), static_cast<std::streamsize>(length));
+        file.close();
+    }
 
-	static inline bool exists(const char* filename)
-	{
-#if _WIN32
-		int ret = _access(filename, 0);
-#else
-		int ret = access(filename, 0);
-#endif
-		return ret == 0;
-	}
-
-	//static inline bool create_directories(const char* folder)
-	//{
-	//	return std::filesystem::create_directories(std::filesystem::path(folder));
-	//}
-
-	//static bool delete_file(const char *name)
-	//{
-	//	return std::filesystem::remove(std::filesystem::path(name));
-	//}
+    static inline bool exists(const char* filename)
+    {
+        try 
+		{
+            return std::filesystem::exists(filename);
+        } catch (...) 
+		{
+            return false;
+        }
+    }
 };
