@@ -395,8 +395,8 @@ typedef enum tagWTSBSDirectType : uint32_t
 typedef enum tagWTSTransType : uint32_t
 {
 	TT_Unknown	= 'U',	//未知类型
-	TT_Match	= 'M',	//撮合成交
-	TT_Cancel	= 'C'	//撤单
+	TT_Match	= 'F',	//撮合成交
+	TT_Cancel	= '4'	//撤单
 }WTSTransType;
 
 
